@@ -6,43 +6,43 @@ use App\Http\Requests\EmployeeIndexRequest;
 use App\Http\Requests\EmployeeStoreRequest;
 use App\Http\Requests\EmployeeUpdateRequest;
 use App\Models\Employee;
-use App\Repositories\EmployeeRepository;
+use App\Repositories\EmployeeRepositoryInterface;
 
 class EmployeeController extends Controller
 {
-    private EmployeeRepository $employeeRepository;
+    private EmployeeRepositoryInterface $employeeRepositoryInterface;
 
-    public function __construct(EmployeeRepository $employeeRepository)
+    public function __construct(EmployeeRepositoryInterface $employeeRepositoryInterface)
     {
-        $this->employeeRepository = $employeeRepository;
+        $this->employeeRepositoryInterface = $employeeRepositoryInterface;
     }
 
     public function index(EmployeeIndexRequest $request) {
-        $data = $this->employeeRepository->getEmployees($request);
+        $data = $this->employeeRepositoryInterface->getEmployees($request);
 
         return response()->json($data);
     }
 
     public function show(Employee $employee) {
-        $data = $this->employeeRepository->getEmployeeById($employee->id);
+        $data = $this->employeeRepositoryInterface->getEmployeeById($employee->id);
 
         return response()->json($data);
     }
 
     public function store(EmployeeStoreRequest $request) {
-        $this->employeeRepository->createEmployee($request);
+        $this->employeeRepositoryInterface->createEmployee($request);
 
         return response()->json([], 201);
     }
 
     public function update(EmployeeUpdateRequest $request, Employee $employee) {
-        $this->employeeRepository->updateEmployee($request, $employee);
+        $this->employeeRepositoryInterface->updateEmployee($request, $employee);
 
         return response()->json([], 200);
     }
 
     public function destroy(Employee $employee) {
-        $this->employeeRepository->deleteEmployee($employee);
+        $this->employeeRepositoryInterface->deleteEmployee($employee);
 
         return response()->json([], 200);
     }
