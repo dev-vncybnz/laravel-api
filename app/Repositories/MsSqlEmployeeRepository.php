@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 
-class EmployeeRepository {
+class MsSqlEmployeeRepository implements EmployeeRepositoryInterface {
 
     private Employee $employee;
 
