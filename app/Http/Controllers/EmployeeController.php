@@ -9,18 +9,15 @@ use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
+    private Employee $employee;
+
+    public function __construct(Employee $employee)
+    {
+        $this->employee = $employee;
+    }
+
     public function index(Request $request) {
-        $perPage = $request->integer('per_page');
-        $keyword = $request->string('keyword');
-
-        $data = null;
-
-        if($keyword) {
-            $data = Employee::where('first_name', 'like', "%$keyword%")
-                    ->orWhere('last_name', 'like', "%$keyword%");
-        }
-
-        $data = $data->paginate($perPage);
+        $data = $this->employee->getEmployees($request);
 
         return response()->json($data);
     }
