@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\Request;
 
 class Employee extends Model
 {
@@ -36,5 +37,21 @@ class Employee extends Model
         return Attribute::make(
             get: fn() => $this->first_name . ' ' . $this->last_name
         );
+    }
+
+    public function getEmployees(Request $request)
+    {
+        $perPage = $request->integer('per_page');
+        $keyword = $request->string('keyword');
+
+        $query = $this->search($keyword);
+
+        return $query->paginate($perPage);
+    }
+
+    public function scopeSearch($query, $keyword)
+    {
+        return $query->where('first_name', 'like', "%$keyword%")
+            ->orWhere('last_name', 'like', "%$keyword%");
     }
 }
