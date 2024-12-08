@@ -2,58 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmployeeIndexRequest;
 use App\Http\Requests\EmployeeStoreRequest;
 use App\Http\Requests\EmployeeUpdateRequest;
 use App\Models\Employee;
-use Illuminate\Http\Request;
+use App\Repositories\EmployeeRepository;
 
 class EmployeeController extends Controller
 {
-    private Employee $employee;
+    private EmployeeRepository $employeeRepository;
 
-    public function __construct(Employee $employee)
+    public function __construct(EmployeeRepository $employeeRepository)
     {
-        $this->employee = $employee;
+        $this->employeeRepository = $employeeRepository;
     }
 
-    public function index(Request $request) {
-        $data = $this->employee->getEmployees($request);
+    public function index(EmployeeIndexRequest $request) {
+        $data = $this->employeeRepository->getEmployees($request);
 
         return response()->json($data);
     }
 
     public function show(Employee $employee) {
-        return response()->json($employee);
-    }
-
-    public function search(Request $request) {
-        $q = $request->string('q');
-
-        $data = Employee::where('first_name', 'like', "%$q%")
-                    ->orWhere('last_name', 'like', "%$q%");
-        $data = $data->paginate();
+        $data = $this->employeeRepository->getEmployeeById($employee->id);
 
         return response()->json($data);
     }
 
     public function store(EmployeeStoreRequest $request) {
-        $validated = $request->validated();
-
-        Employee::create($validated);
+        $this->employeeRepository->createEmployee($request);
 
         return response()->json([], 201);
     }
 
     public function update(EmployeeUpdateRequest $request, Employee $employee) {
-        $validated = $request->validated();
-
-        $employee->update($validated);
+        $this->employeeRepository->updateEmployee($request, $employee);
 
         return response()->json([], 200);
     }
 
     public function destroy(Employee $employee) {
-        $employee->delete();
+        $this->employeeRepository->deleteEmployee($employee);
 
         return response()->json([], 200);
     }
